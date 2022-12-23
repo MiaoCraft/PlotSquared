@@ -22,10 +22,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --full-stacktrace
         
-      - name: cd
-        run: cd Bukkit
       - name: check files 
-        run: ls
+        run: ls Bukkit
         
       - uses: actions/upload-artifact@v2
         with:
