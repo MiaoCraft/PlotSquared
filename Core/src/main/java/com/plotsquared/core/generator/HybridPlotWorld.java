@@ -68,8 +68,6 @@ public class HybridPlotWorld extends ClassicPlotWorld {
     private static final AffineTransform transform = new AffineTransform().rotateY(90);
     public boolean ROAD_SCHEMATIC_ENABLED;
     public boolean PLOT_SCHEMATIC = false;
-    @Deprecated(forRemoval = true, since = "6.9.0")
-    public int PLOT_SCHEMATIC_HEIGHT = -1;
     public short PATH_WIDTH_LOWER;
     public short PATH_WIDTH_UPPER;
     public HashMap<Integer, BaseBlock[]> G_SCH;
@@ -102,22 +100,6 @@ public class HybridPlotWorld extends ClassicPlotWorld {
     ) {
         super(worldName, id, generator, min, max, worldConfiguration, blockQueue);
         PlotSquared.platform().injector().injectMembers(this);
-    }
-
-    @Deprecated(forRemoval = true, since = "6.9.0")
-    public static byte wrap(byte data, int start) {
-        if ((data >= start) && (data < (start + 4))) {
-            data = (byte) ((((data - start) + 2) & 3) + start);
-        }
-        return data;
-    }
-
-    @Deprecated(forRemoval = true, since = "6.9.0")
-    public static byte wrap2(byte data, int start) {
-        if ((data >= start) && (data < (start + 2))) {
-            data = (byte) ((((data - start) + 1) & 1) + start);
-        }
-        return data;
     }
 
     public static BaseBlock rotate(BaseBlock id) {
@@ -341,7 +323,7 @@ public class HybridPlotWorld extends ClassicPlotWorld {
             short w3 = (short) d3.getX();
             short l3 = (short) d3.getZ();
             short h3 = (short) d3.getY();
-            if (w3 > PLOT_WIDTH || h3 > PLOT_WIDTH) {
+            if (w3 > PLOT_WIDTH || l3 > PLOT_WIDTH) {
                 this.ROAD_SCHEMATIC_ENABLED = true;
             }
             int centerShiftZ;
@@ -396,7 +378,7 @@ public class HybridPlotWorld extends ClassicPlotWorld {
         }
         if ((schematic1 == null && schematic2 == null) || this.ROAD_WIDTH == 0) {
             if (Settings.DEBUG) {
-                LOGGER.info("- schematic: false");
+                LOGGER.info("- road schematic: false");
             }
             return;
         }
@@ -486,11 +468,7 @@ public class HybridPlotWorld extends ClassicPlotWorld {
         }
     }
 
-    /**
-     * @deprecated This method should not be available for public API usage and will be made private.
-     */
-    @Deprecated(forRemoval = true, since = "6.10.2")
-    public void addOverlayBlock(short x, short y, short z, BaseBlock id, boolean rotate, int height) {
+    private void addOverlayBlock(short x, short y, short z, BaseBlock id, boolean rotate, int height) {
         if (z < 0) {
             z += this.SIZE;
         } else if (z >= this.SIZE) {
@@ -521,11 +499,7 @@ public class HybridPlotWorld extends ClassicPlotWorld {
         existing[y] = id;
     }
 
-    /**
-     * @deprecated This method should not be available for public API usage and will be made private.
-     */
-    @Deprecated(forRemoval = true, since = "6.10.2")
-    public void addOverlayBiome(short x, short z, BiomeType id) {
+    private void addOverlayBiome(short x, short z, BiomeType id) {
         if (z < 0) {
             z += this.SIZE;
         } else if (z >= this.SIZE) {
@@ -568,14 +542,6 @@ public class HybridPlotWorld extends ClassicPlotWorld {
     @DoNotUse
     public boolean populationNeeded() {
         return schem1PopulationNeeded || schem2PopulationNeeded || schem3PopulationNeeded;
-    }
-
-    /**
-     * @deprecated in favour of {@link HybridPlotWorld#getSchematicRoot()}
-     */
-    @Deprecated(forRemoval = true, since = "6.9.0")
-    public File getRoot() {
-        return this.root;
     }
 
     /**

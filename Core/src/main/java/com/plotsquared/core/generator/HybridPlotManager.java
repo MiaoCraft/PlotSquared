@@ -141,7 +141,11 @@ public class HybridPlotManager extends ClassicPlotManager {
                         (pos1.getX() + pos2.getX()) / 2,
                         (pos1.getZ() + pos2.getZ()) / 2
                 ), biome)) {
-            WorldUtil.setBiome(hybridPlotWorld.getWorldName(), new CuboidRegion(pos1.getBlockVector3(), pos2.getBlockVector3()), biome);
+            WorldUtil.setBiome(
+                    hybridPlotWorld.getWorldName(),
+                    new CuboidRegion(pos1.getBlockVector3(), pos2.getBlockVector3()),
+                    biome
+            );
         }
     }
 
@@ -203,8 +207,18 @@ public class HybridPlotManager extends ClassicPlotManager {
         PlotId id2 = PlotId.of(id.getX(), id.getY() + 1);
         Location bot = getPlotBottomLocAbs(id2);
         Location top = getPlotTopLocAbs(id);
-        Location pos1 = Location.at(hybridPlotWorld.getWorldName(), bot.getX() - 1, hybridPlotWorld.getMinGenHeight(), top.getZ() + 1);
-        Location pos2 = Location.at(hybridPlotWorld.getWorldName(), top.getX() + 1, hybridPlotWorld.getMaxGenHeight(), bot.getZ());
+        Location pos1 = Location.at(
+                hybridPlotWorld.getWorldName(),
+                bot.getX() - 1,
+                hybridPlotWorld.getMinGenHeight(),
+                top.getZ() + 1
+        );
+        Location pos2 = Location.at(
+                hybridPlotWorld.getWorldName(),
+                top.getX() + 1,
+                hybridPlotWorld.getMaxGenHeight(),
+                bot.getZ()
+        );
         this.resetBiome(hybridPlotWorld, pos1, pos2);
         if (!hybridPlotWorld.ROAD_SCHEMATIC_ENABLED) {
             return true;
@@ -274,6 +288,13 @@ public class HybridPlotManager extends ClassicPlotManager {
             queue.setCompleteTask(whenDone);
         }
         if (!canRegen) {
+            if (hybridPlotWorld.getMinBuildHeight() < hybridPlotWorld.getMinGenHeight()) {
+                queue.setCuboid(
+                        pos1.withY(hybridPlotWorld.getMinBuildHeight()),
+                        pos2.withY(hybridPlotWorld.getMinGenHeight()),
+                        BlockTypes.AIR.getDefaultState()
+                );
+            }
             queue.setCuboid(
                     pos1.withY(hybridPlotWorld.getMinGenHeight()),
                     pos2.withY(hybridPlotWorld.getMinGenHeight()),
@@ -291,6 +312,13 @@ public class HybridPlotManager extends ClassicPlotManager {
                     pos2.withY(hybridPlotWorld.getMaxGenHeight()),
                     BlockTypes.AIR.getDefaultState()
             );
+            if (hybridPlotWorld.getMaxGenHeight() < hybridPlotWorld.getMaxBuildHeight() - 1) {
+                queue.setCuboid(
+                        pos1.withY(hybridPlotWorld.getMaxGenHeight()),
+                        pos2.withY(hybridPlotWorld.getMaxBuildHeight() - 1),
+                        BlockTypes.AIR.getDefaultState()
+                );
+            }
             queue.setBiomeCuboid(pos1, pos2, biome);
         } else {
             queue.setRegenRegion(new CuboidRegion(pos1.getBlockVector3(), pos2.getBlockVector3()));
