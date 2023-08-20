@@ -131,8 +131,8 @@ public class Auto extends SubCommand {
                         player.sendMessage(
                                 TranslatableCaption.of("economy.removed_granted_plot"),
                                 TagResolver.builder()
-                                        .tag("usedGrants", Tag.inserting(Component.text(grantedPlots - left)))
-                                        .tag("remainingGrants", Tag.inserting(Component.text(left)))
+                                        .tag("used_grants", Tag.inserting(Component.text(grantedPlots - left)))
+                                        .tag("remaining_grants", Tag.inserting(Component.text(left)))
                                         .build()
                         );
                     }
@@ -294,12 +294,15 @@ public class Auto extends SubCommand {
                 return true;
             }
         }
-        if (this.econHandler != null && plotarea.useEconomy()) {
+        if (this.econHandler != null && plotarea.useEconomy() && !player.hasPermission(Permission.PERMISSION_ADMIN_BYPASS_ECON)) {
             PlotExpression costExp = plotarea.getPrices().get("claim");
+            PlotExpression mergeCostExp = plotarea.getPrices().get("merge");
+            int size = sizeX * sizeZ;
+            double mergeCost = size <= 1 || mergeCostExp == null ? 0d : mergeCostExp.evaluate(size);
             double cost = costExp.evaluate(Settings.Limit.GLOBAL ?
                     player.getPlotCount() :
                     player.getPlotCount(plotarea.getWorldName()));
-            cost = (sizeX * sizeZ) * cost;
+            cost = size * cost + mergeCost;
             if (cost > 0d) {
                 if (!this.econHandler.isSupported()) {
                     player.sendMessage(TranslatableCaption.of("economy.vault_or_consumer_null"));
